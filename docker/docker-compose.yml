@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+    php:
+        build:
+            context: ./php
+            args:
+                TIMEZONE: ${TIMEZONE}
+        volumes:
+            - ../:/var/www/symfony:cached
+            - symfony_app_var:/var/www/symfony/var
+            - symfony_app_vendor:/var/www/symfony/vendor
+        networks:
+            - symfony_app
+        env_file:
+            - .env
+        #entrypoint: sh -c "chmod +x /var/www/symfony/startcontainer.sh && /var/www/symfony/startcontainer.sh"
+    nginx:
+        build:
+            context: ./nginx
+        volumes:
+            - ../:/var/www/symfony:cached
+            - symfony_app_var:/var/www/symfony/var
+            - symfony_app_vendor:/var/www/symfony/vendor
+            #- ./data:/var/www/data
+        ports:
+            - 8002:80
+        networks:
+            - symfony_app
+        env_file:
+            - .env.nginx.local
+
+volumes:
+    symfony_app_var:
+    symfony_app_vendor:
+
+networks:
+    symfony_app:

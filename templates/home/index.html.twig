@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}IPAMCraft{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">
+
+
+
+
+<a href="/add"><button type="button" class="btn btn-success">Host hinzufügen</button></a>
+    <br />
+    <br />
+<div class="table-responsive">
+
+    <table class="table" data-toggle="table" data-pagination="true"
+           data-search="false">
+        <thead>
+        <tr>
+            <th scope="col" data-field="ip" data-sortable="true">IP</th>
+            <th scope="col" data-field="name" data-sortable="true">Name</th>
+            <th scope="col" data-field="assetid" data-sortable="true">AssetID</th>
+            <th scope="col">Beschreibung</th>
+            <th scope="col" data-field="status" data-sortable="true">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for host in hosts %}
+            <script>getPingByHost({{ host.getId }});</script>
+        <tr>
+            <th scope="row"><a href="/edit/{{ host.getId }}">{{ host.getIp }}</a></th>
+            <td>{{ host.getName }}</td>
+            <td>{{ host.getAssetId }}</td>
+            <td>{{ host.getDescription }}</td>
+            <td><div id="status-{{ host.getId }}"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
