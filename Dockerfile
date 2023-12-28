@@ -21,9 +21,9 @@ RUN  mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 RUN mkdir IPAMCraft
 WORKDIR /var/www/IPAMCraft
 COPY . .
-RUN rm .env.local
-RUN rm -r ./vendor
-RUN rm -r ./var
+#RUN rm -f .env.local
+#RUN rm -f -r ./vendor
+#RUN rm -f -r ./var
 #RUN composer update  --with-all-dependencies
 #RUN composer install
 #RUN bin/console doctrine:schema:update --force
