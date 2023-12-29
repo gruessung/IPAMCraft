@@ -30,7 +30,7 @@ class HomeController extends  BaseController
     public function home(): Response
     {
         return $this->render('home/index.html.twig', [
-            'hosts' => $this->hostRepository->findBy([], ['ip' => 'ASC'])
+            'hosts' => $this->hostRepository->findAll()
         ]);
     }
 
