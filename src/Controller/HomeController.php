@@ -29,8 +29,18 @@ class HomeController extends  BaseController
     #[Route('/home', name: 'app_home')]
     public function home(): Response
     {
+
+        $hosts = $this->hostRepository->findAll();
+        $data = array();
+        $ipList = [];
+        foreach($hosts as $arrayKey => $host){
+            $data[$arrayKey] = $host;
+            $ipList[$arrayKey] = $host->getIp();
+        }
+        array_multisort($ipList, SORT_NATURAL, $data);
+
         return $this->render('home/index.html.twig', [
-            'hosts' => $this->hostRepository->findAll()
+            'hosts' => $data
         ]);
     }
 
@@ -66,13 +76,13 @@ class HomeController extends  BaseController
                 $this->addAlert(Alert::create('Host "' . $host->getName() . '" wurde gespeichert!', Alert::OK));
                 return $this->home();
             } catch (\Exception $exception) {
-                if (strpos($exception->getMessage(), 'UNIQUE constraint failed: host.ip') !== false) {
+                if (strpos($exception->getMessage(), 'UNIQ_CF2713FDA5E3B32D') !== false) {
                     $this->addAlert(Alert::create('IP Adresse bereits vergeben!', Alert::ERROR));
                 }
-                else if (strpos($exception->getMessage(), 'UNIQUE constraint failed: host.mac') !== false) {
+                else if (strpos($exception->getMessage(), 'UNIQ_CF2713FD1713EB65') !== false) {
                     $this->addAlert(Alert::create('MAC Adresse bereits vergeben!', Alert::ERROR));
                 }
-                else if (strpos($exception->getMessage(), 'UNIQUE constraint failed: host.asset_id') !== false) {
+                else if (strpos($exception->getMessage(), 'UNIQ_CF2713FD5DA1941') !== false) {
                     $this->addAlert(Alert::create('Asset ID bereits vergeben!', Alert::ERROR));
                 }
                 else {
