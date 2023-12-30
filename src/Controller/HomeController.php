@@ -31,6 +31,8 @@ class HomeController extends  BaseController
     {
 
         $hosts = $this->hostRepository->findAll();
+
+        #https://stackoverflow.com/a/46889254/2358160
         $data = array();
         $ipList = [];
         foreach($hosts as $arrayKey => $host){
