@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class HomeController extends  BaseController
+class HostController extends  BaseController
 {
     private HostRepository $hostRepository;
 
@@ -26,7 +26,8 @@ class HomeController extends  BaseController
         return $this->home();
     }
 
-    #[Route('/home', name: 'app_home')]
+    #[Route('/host', name: 'app_home')]
+    #[Route('/host', name: 'app_home')]
     public function home(): Response
     {
 
@@ -41,12 +42,12 @@ class HomeController extends  BaseController
         }
         array_multisort($ipList, SORT_NATURAL, $data);
 
-        return $this->render('home/index.html.twig', [
+        return $this->render('host/index.html.twig', [
             'hosts' => $data
         ]);
     }
 
-    #[Route(['/delete/{host_id}'], name: 'delete_item')]
+    #[Route(['/host/{host_id}/delete'], name: 'delete_item')]
     public function delete(Request $request, EntityManagerInterface $entityManager, HostRepository $hostRepository, $host_id = 0) : Response {
         try {
             $host = $hostRepository->find($host_id);
@@ -60,7 +61,7 @@ class HomeController extends  BaseController
     }
 
 
-    #[Route(['/add', '/edit/{host_id}'], name: 'add_item')]
+    #[Route(['/host/add', '/host/{host_id}'], name: 'add_item')]
     public function add(Request $request, EntityManagerInterface $entityManager, HostRepository $hostRepository, $host_id = 0): Response {
         $host = new Host();
         if ($host_id > 0) {
@@ -93,7 +94,7 @@ class HomeController extends  BaseController
             }
         }
 
-        return $this->render('home/add_item.html.twig', [
+        return $this->render('host/add_item.html.twig', [
             'form' => $form,
             'edititem' => $host_id > 0,
             'host_id' => $host_id

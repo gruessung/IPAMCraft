@@ -7,6 +7,6 @@
 {% block body %}
     {{ form(form) }}
     {% if edititem == true %}
-        <a href="/delete/{{ host_id }}"><button type="submit" class="btn-danger btn">Löschen</button></a>
+        <a href="/host/{{ host_id }}/delete"><button type="submit" class="btn-danger btn">Löschen</button></a>
     {% endif %}
 {% endblock %}

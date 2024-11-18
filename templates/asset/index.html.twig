@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}IPAMCraft{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">
+
+
+
+
+    <a href="/asset/add"><button type="button" class="btn btn-success">Asset hinzufügen</button></a>
+    <br />
+    <br />
+    <div class="table-responsive">
+
+        <table class="table" data-toggle="table" data-pagination="false"
+               data-search="false" id="assetsTable">
+            <thead>
+            <tr>
+                <th scope="col" data-field="ip" data-sortable="true">AssetID</th>
+                <th scope="col" data-field="name" data-sortable="true">Name</th>
+                <th scope="col" data-field="host" data-sortable="true">Host</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for asset in assets %}
+                <tr>
+                    <th scope="row"><a href="/asset/{{ asset.getId }}">{{ asset.getLabelno }}</a></th>
+                    <td>{{ asset.getName }}</td>
+                    <td>{% if asset.host is not null %} <a href="/host/{{ asset.host.id }}">{{ asset.host.getname}}</a> {% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}

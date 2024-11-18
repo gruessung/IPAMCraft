@@ -8,7 +8,7 @@
 
 
 
-<a href="/add"><button type="button" class="btn btn-success">Host hinzufügen</button></a>
+<a href="/host/add"><button type="button" class="btn btn-success">Host hinzufügen</button></a>
     <br />
     <br />
 <div class="table-responsive">
@@ -28,9 +28,9 @@
         {% for host in hosts %}
             <script>getPingByHost({{ host.getId }});</script>
         <tr>
-            <th scope="row"><a href="/edit/{{ host.getId }}">{{ host.getIp }}</a></th>
+            <th scope="row"><a href="/host/{{ host.getId }}">{{ host.getIp }}</a></th>
             <td>{{ host.getName }}</td>
-            <td>{{ host.getAssetId }}</td>
+            <td>{% if host.asset is not null %} <a href="/asset/{{ host.asset.id }}">{{ host.asset.labelno}}</a> {% endif %}</td>
             <td>{{ host.getDescription }}</td>
             <td><div id="status-{{ host.getId }}"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div></td>
         </tr>

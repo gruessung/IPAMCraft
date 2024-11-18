@@ -2,43 +2,81 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\HostRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use JJG\Ping;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Ip;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 #[ORM\Entity(repositoryClass: HostRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => 'host:item']),
+        new GetCollection(normalizationContext: ['groups' => 'host:list']),
+        new Put(normalizationContext: ['groups' => 'host:item']),
+        new Delete(normalizationContext: ['groups' => 'host:item']),
+        new Post(normalizationContext: ['groups' => 'host:item']),
+    ],
+    order: ['id' => 'ASC'],
+    paginationEnabled: false,
+)]
+#[ApiFilter(SearchFilter::class, properties: ['asset' => 'exact'])]
 class Host
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['host:list', 'host:item', 'asset:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
+    #[Groups(['host:list', 'host:item'])]
     private ?string $mac = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['host:list', 'host:item'])]
     private ?string $ip = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['host:list', 'host:item'])]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(inversedBy: 'hosts', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?HostType $type = null;
-
-    #[ORM\Column(length: 255, nullable: true, unique: true)]
-    private ?string $asset_id = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['host:list', 'host:item'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['host:list', 'host:item'])]
     private ?bool $is_static = null;
+
+    #[ORM\OneToOne(inversedBy: 'host', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['host:list', 'host:item'])]
+    private ?Asset $asset = null;
+
+    #[ORM\ManyToOne(targetEntity: HostType::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['host:list', 'host:item'])]
+    private ?HostType $type = null;
+
+    public function getType(): ?HostType
+    {
+        return $this->type;
+    }
+
+    public function setType(?HostType $type): void
+    {
+        $this->type = $type;
+    } // Prüfe, ob hier die korrekte Klasse referenziert ist.
 
     public function getId(): ?int
     {
@@ -53,7 +91,6 @@ class Host
     public function setMac(?string $mac): static
     {
         $this->mac = $mac;
-
         return $this;
     }
 
@@ -65,7 +102,6 @@ class Host
     public function setIp(string $ip): static
     {
         $this->ip = $ip;
-
         return $this;
     }
 
@@ -77,31 +113,6 @@ class Host
     public function setName(?string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getType(): ?HostType
-    {
-        return $this->type;
-    }
-
-    public function setType(HostType $type): static
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getAssetId(): ?string
-    {
-        return $this->asset_id;
-    }
-
-    public function setAssetId(?string $asset_id): static
-    {
-        $this->asset_id = $asset_id;
-
         return $this;
     }
 
@@ -113,7 +124,6 @@ class Host
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -125,14 +135,17 @@ class Host
     public function setIsStatic(bool $is_static): static
     {
         $this->is_static = $is_static;
-
         return $this;
     }
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    public function getAsset(): ?Asset
     {
-        $metadata->addPropertyConstraint('ip', new Ip());
-        $metadata->addPropertyConstraint('name', new NotBlank());
+        return $this->asset;
     }
 
+    public function setAsset(?Asset $asset): static
+    {
+        $this->asset = $asset;
+        return $this;
+    }
 }

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+
+{% block title %}IPAMCraft{% endblock %}
+
+{% block body %}
+    {{ form(form) }}
+    {% if edititem == true %}
+        <a href="/asset/{{ host_id }}/delete"><button type="submit" class="btn-danger btn">Löschen</button></a>
+    {% endif %}
+{% endblock %}
