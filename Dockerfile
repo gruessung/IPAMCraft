@@ -28,4 +28,4 @@ COPY . .
 #RUN composer install
 #RUN bin/console doctrine:schema:update --force
 #RUN bin/console doctrine:schema:update --force
-CMD cd /var/www/IPAMCraft && composer update  --with-all-dependencies  && symfony server:start --port=8002
+CMD cd /var/www/IPAMCraft && composer update  --with-all-dependencies  && symfony server:start --port=8002 --allow-all-ip
