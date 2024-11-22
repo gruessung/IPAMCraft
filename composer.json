@@ -46,6 +46,7 @@
         "symfony/ux-turbo": "^2.13",
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
+        "symfony/webpack-encore-bundle": "*",
         "symfony/yaml": "6.4.*",
         "twbs/bootstrap": "^5.3",
         "twbs/bootstrap-icons": "^1.11",

@@ -1,31 +1,43 @@
+# Dockerfile
 FROM php:8.3-fpm
 
-RUN apt update \
-    && apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip iputils-ping \
-    && docker-php-ext-install intl opcache pdo pdo_mysql \
-    && pecl install apcu \
-    && docker-php-ext-enable apcu \
-    && docker-php-ext-configure zip \
-    && docker-php-ext-install zip
+# Installiere System-Tools und PHP-Erweiterungen
+RUN apt-get update && apt-get install -y \
+    libicu-dev \
+    libzip-dev \
+    libpq-dev \
+    unzip \
+    git \
+    && docker-php-ext-install \
+    intl \
+    opcache \
+    pdo_mysql \
+    pdo_pgsql \
+    zip \
+    && pecl install apcu && docker-php-ext-enable apcu
 
+# Installiere Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Setze den Arbeitsordner
+WORKDIR /var/www/symfony
 
-
-WORKDIR /var/www/
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-RUN curl -sS https://get.symfony.com/cli/installer | bash
-RUN  mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
-
-RUN mkdir IPAMCraft
-WORKDIR /var/www/IPAMCraft
+# Kopiere Projektdateien
 COPY . .
-#RUN rm -f .env.local
-#RUN rm -f -r ./vendor
-#RUN rm -f -r ./var
-#RUN composer update  --with-all-dependencies
-#RUN composer install
-#RUN bin/console doctrine:schema:update --force
-#RUN bin/console doctrine:schema:update --force
-CMD cd /var/www/IPAMCraft && composer update  --with-all-dependencies  && symfony server:start --port=8002 --allow-all-ip --listen-ip=0.0.0.0
+
+# Kopiere das Entrypoint-Skript
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Installiere Abhängigkeiten (für den Build)
+RUN composer install --optimize-autoloader
+RUN composer update
+
+# Exponiere Port 9000
+EXPOSE 9000
+
+# Setze das Entrypoint-Skript
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Fallback zum Starten von PHP-FPM
+CMD ["php-fpm"]
